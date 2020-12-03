@@ -1,5 +1,7 @@
 <template>
   <div>
+    <!-- loader -->
+    <base-loader v-show="isLoading"/>
     <!-- Header -->
     <div class="header bg-gradient-success py-7 py-lg-8 pt-lg-9">
       <b-container>
@@ -85,9 +87,16 @@
   </div>
 </template>
 <script>
+  import auth from '@/routes/auth';
+  import BaseLoader from '@/components/BaseLoader';
+
   export default {
+    components: {
+      BaseLoader
+    },
     data() {
       return {
+        isLoading: false,
         model: {
           email: '',
           password: '',
@@ -97,7 +106,17 @@
     },
     methods: {
       onSubmit() {
-        // this will be called only after form is valid. You can do api call here to login
+        this.isLoading = true;
+        const {email, password} = this.model;
+        auth.login(email, password, loggedIn => {
+          if (!loggedIn) {
+            this.error = true;
+          } else {
+            this.$router.replace(this.$route.query.redirect || '/');
+          }
+          this.isLoading = false;
+          console.log('loading');
+        })
       }
     }
   };

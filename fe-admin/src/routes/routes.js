@@ -3,6 +3,19 @@ import AuthLayout from '@/views/Pages/AuthLayout.vue';
 
 import NotFound from '@/views/NotFoundPage.vue';
 
+import auth from './auth';
+
+function requireAuth (to, from, next) {
+  if (!auth.loggedIn()) {
+    next({
+      path: '/login',
+      query: { redirect: to.fullPath }
+    })
+  } else {
+    next()
+  }
+}
+
 const routes = [
   {
     path: '/',
@@ -15,7 +28,8 @@ const routes = [
         // route level code-splitting
         // this generates a separate chunk (about.[hash].js) for this route
         // which is lazy-loaded when the route is visited.
-        component: () => import(/* webpackChunkName: "demo" */ '../views/Dashboard.vue')
+        component: () => import(/* webpackChunkName: "demo" */ '../views/Dashboard.vue'),
+        beforeEnter: requireAuth
       },
       {
         path: '/icons',
